@@ -3,6 +3,11 @@ from chromadb import PersistentClient, EmbeddingFunction, Embeddings
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from typing import List
 import json
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+LOGGER = logging.getLogger(__name__)
 
 # Configuration constants for the vector store
 # MODEL_NAME: The HuggingFace embedding model to use for generating vector embeddings
@@ -47,7 +52,7 @@ class CustomEmbeddingClass(EmbeddingFunction):
     def __call__(self, input_texts: List[str]) -> Embeddings:
         # Generate embeddings for a list of input texts
         # Returns a list of embedding vectors corresponding to each input text
-        return [self.embedding_model.get_text_embeddings(text) for text in input_texts]
+        return [self.embedding_model.get_text_embedding(text) for text in input_texts]
     
 
 class FlowerShopVectorStore:
@@ -59,6 +64,7 @@ class FlowerShopVectorStore:
 
     def __init__(self):
         # Initialize ChromaDB persistent client with the configured database path
+        LOGGER.info(f"Initializing FlowerShopVectorStore with DB path: {DB_PATH}")
         db = PersistentClient(path=DB_PATH)
         custom_embedding_function = CustomEmbeddingClass()
 
@@ -72,6 +78,8 @@ class FlowerShopVectorStore:
 
         if self.inventory_collection.count() == 0:
             self._load_inventory_collection(INVENTORY_FILE_PATH)
+
+        LOGGER.info("FlowerShopVectorStore initialized successfully with FAQ and Inventory collections.")
 
 
     def _load_faq_collection(self, faq_file_path: str):
