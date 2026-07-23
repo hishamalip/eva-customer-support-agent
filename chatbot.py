@@ -3,7 +3,7 @@ from langgraph.graph import StateGraph, MessagesState
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import ToolNode
-from tools import query_knowledge_base, search_for_product_recommendations
+from tools import query_knowledge_base, search_for_product_recommendations, data_protection_check, create_new_customer
 
 
 load_dotenv()
@@ -37,7 +37,7 @@ llm = ChatOpenAI(
     # api_key="lm-studio" // API key is added in .env file
 )
 
-tools = [query_knowledge_base, search_for_product_recommendations]
+tools = [query_knowledge_base, search_for_product_recommendations, data_protection_check, create_new_customer]
 llm_with_prompt = chat_template | llm.bind_tools(tools)
 
 def call_agent(message_state: MessagesState):
@@ -59,7 +59,7 @@ def is_there_tool_calls(state: MessagesState):
         return '__end__'
 
 
-
+# Create a state graph for the chatbot
 graph = StateGraph(MessagesState)   # Initialize with state type
 
 graph.add_node('agent', call_agent) # Node 'agent' runs `call_agent`
