@@ -2,8 +2,16 @@ from langchain_core.tools import tool
 from typing import List, Dict
 from vector_store import FlowerShopVectorStore
 
-vector_store = FlowerShopVectorStore()
 
+# Setup customer database(dummy data for the example)
+CUSTOMER_DATABASE = [
+    {"name": "John Doe", "dob": "1990-01-01", "customer_id": "CUST001", "first_line_address": "123 Main St", "phone_number": "7712345678", "email": "john.doe@example.com"},
+    {"name": "Jane Smith", "dob": "1985-05-15", "customer_id": "CUST002", "first_line_address": "456 High St", "phone_number": "7723456789", "email": "jane.smith@example.com"},
+]
+
+
+# Initialize the object for the FlowerShopVectorStore
+vector_store = FlowerShopVectorStore()
 
 @tool
 def query_knowledge_base(query: str) -> List[Dict[str, str]]:
@@ -35,3 +43,62 @@ def search_for_product_recommendations(description: str) -> List[Dict[str, str]]
         List[Dict[str, str]]: Potentially relevant products.
     """
     return vector_store.query_inventory(description)
+
+
+@tool
+def data_protection_check(name: str, email: str, year_of_birth: int, month_of_birth: int, day_of_birth: int) -> str:
+    """
+    Perform a data protection check against a customer to retrieve customer details.
+
+    Args:
+        name (str): Customer first and last name
+        email (str): Customer email address
+        year_of_birth (int): The year the customer was born
+        month_of_birth (int): The month the customer was born
+        day_of_birth (int): The day the customer was born
+
+    Returns:
+        str: Customer details (name, postcode, dob, customer_id, first_line_address, email)
+    """
+    for customer in CUSTOMER_DATABASE:
+        if (customer['name'].lower() == name.lower() and
+            customer['email'].lower() == email.lower() and
+            int(customer['dob'][0:4]) == year_of_birth and
+            int(customer["dob"][5:7]) == month_of_birth and
+            int(customer["dob"][8:10]) == day_of_birth):
+            return f"DPA check passed - Retrieved customer details:\n{customer}"
+
+    return "DPA check failed, no customer with these details found"
+
+
+@tool
+def create_new_customer(first_name: str, surname: str, year_of_birth: int, month_of_birth: int, day_of_birth: int, first_line_of_address: str, phone_number: str, email: str) -> str:
+    """
+    Creates a customer profile, so that they can place orders.
+
+    Args:
+        first_name (str): Customers first name
+        surname (str): Customers surname
+        year_of_birth (int): Year customer was born
+        month_of_birth (int): Month customer was born
+        day_of_birth (int): Day customer was born
+        first_line_address (str): Customer's first line of address
+        phone_number (str): Customer's phone number
+        email (str): Customer's email address
+
+    Returns:
+        str: Confirmation that the profile has been created or any issues with the inputs
+    """
+    if len(phone_number) != 10:
+        return "Phone number must be 10 digits"
+
+    customer_id = len(CUSTOMER_DATABASE) + 1
+    CUSTOMER_DATABASE.append({
+        'name': first_name + ' ' + surname,
+        'dob': f'{year_of_birth}-{month_of_birth:02}-{day_of_birth:02}',
+        'first_line_address': first_line_of_address,
+        'phone_number': phone_number,
+        'email': email,
+        'customer_id': f'CUST{customer_id}'
+    })
+    return f"Customer registered, with customer_id {f'CUST{customer_id}'}"
