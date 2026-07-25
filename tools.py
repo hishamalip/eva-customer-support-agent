@@ -1,6 +1,7 @@
 from langchain_core.tools import tool
 from typing import List, Dict
 from vector_store import FlowerShopVectorStore
+import json
 
 
 # Setup customer database(dummy data for the example)
@@ -9,8 +10,16 @@ CUSTOMER_DATABASE = [
     {"name": "Jane Smith", "dob": "1985-05-15", "customer_id": "CUST002", "first_line_address": "456 High St", "phone_number": "7723456789", "email": "jane.smith@example.com"},
 ]
 
+ORDERS_DATABASE = [
+    {"order_id": "ORD1", "customer_id": "CUST001", "status": "Processing", "items": ["Red Roses Bouquet"], "quantity": [1]},
+    {"order_id": "ORD2", "customer_id": "CUST002", "status": "Shipped", "items": ["Mixed Tulips", "Vase"], "quantity": [3, 1]},
+]
 
-# Initialize the object for the FlowerShopVectorStore
+with open('inventory.json', 'r') as f:
+    INVENTORY_DATABASE = json.load(f)
+
+
+# Initialize the vector store instance for querying FAQ and inventory data
 vector_store = FlowerShopVectorStore()
 
 @tool
@@ -102,3 +111,71 @@ def create_new_customer(first_name: str, surname: str, year_of_birth: int, month
         'customer_id': f'CUST{customer_id}'
     })
     return f"Customer registered, with customer_id {f'CUST{customer_id}'}"
+
+
+@tool
+def retrieve_existing_customer_orders(customer_id: str) -> List[Dict]:
+    """
+    Retrieves the orders associated with the customer, including their status, items and ids
+
+    Args:
+        customer_id (str): Customer unique id associated with the order
+
+    Returns:
+        List[Dict]: All the orders associated with the customer_id passed in
+    """
+    customer_orders = [order for order in ORDERS_DATABASE if order['customer_id'] == customer_id]
+    if not customer_orders:
+        return f"No orders associated with this customer id: {customer_id}"
+
+    return customer_orders
+
+
+@tool
+def place_order(items: Dict[str, int], customer_id: str) -> str:
+    """
+    Places an order for the requested items, and for the required quantities.
+
+    Args:
+        items (Dict[str, int]): Dictionary of items to order, with item id as the key and the quantity of that item as the value.
+        customer_id (str): The customer to place the order for
+
+    Returns:
+        str: Message indicating that the order has been placed, or, it hasnt been placed due to an issue 
+    
+    Example arguments:
+        items = {"P005": 3, "P012": 5}
+        customer_id = "CUST001"
+    """
+    # Check that the item ids are valid and the quantities of items are valid
+    availability_messages = []
+    valid_item_ids = {item['id'] for item in INVENTORY_DATABASE}
+
+    for item_id, quantity in items.items():
+        if item_id not in valid_item_ids:
+            availability_messages.append(f'Item with id {item_id} is not found in the inventory')
+        else:
+            inventory_item = next(item for item in INVENTORY_DATABASE if item['id'] == item_id) # Get the inventory item details
+            if quantity > inventory_item['quantity']:
+                availability_messages.append(f'There is insufficient quantity in the inventory for this item {inventory_item["name"]}\nAvailable: {inventory_item["quantity"]}\nRequested: {quantity}')
+    if availability_messages:
+        return "Order cannot be placed due to the following issues: \n" + '\n'.join(availability_messages)
+
+    # Place the order (in pretend database)
+    order_id = f"ORD{len(ORDERS_DATABASE) + 1}"
+    ORDERS_DATABASE.append(
+        {
+            'order_id': order_id,
+            'customer_id': customer_id,
+            'status': 'Waiting for payment',
+            'items': list(items.keys()),
+            'quantity': list(items.values())
+        }
+    )
+
+    # Update the inventory
+    for item_id, quantity in items.items():
+        inventory_item = next(item for item in INVENTORY_DATABASE if item['id'] == item_id) # Get the inventory item details
+        inventory_item['quantity'] -= quantity
+
+    return f"Order with id {order_id} has been placed successfully"

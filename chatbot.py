@@ -3,7 +3,7 @@ from langgraph.graph import StateGraph, MessagesState
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import ToolNode
-from tools import query_knowledge_base, search_for_product_recommendations, data_protection_check, create_new_customer
+from tools import query_knowledge_base, search_for_product_recommendations, data_protection_check, create_new_customer, place_order, retrieve_existing_customer_orders
 
 
 load_dotenv()
@@ -16,6 +16,8 @@ You are a customer service chatbot for a flower shop company. You can help the c
 # Goals
 1. Answer questions the user might have relating to serivces offered
 2. Recommend products to the user based on their preferences
+3. Help customers check the status of their own existing orders or place new orders for themselves.
+4. To place and manage orders, you will need a customer profile (with an associated id). If the customer already has a profile, perform a data protection check to retrieve their details. If not, create them a profile.
 
 # Tone
 Helpful and friendly. Use cute flower related emojis to keep things lighthearted.
@@ -37,7 +39,7 @@ llm = ChatOpenAI(
     # api_key="lm-studio" // API key is added in .env file
 )
 
-tools = [query_knowledge_base, search_for_product_recommendations, data_protection_check, create_new_customer]
+tools = [query_knowledge_base, search_for_product_recommendations, data_protection_check, create_new_customer, place_order, retrieve_existing_customer_orders]
 llm_with_prompt = chat_template | llm.bind_tools(tools)
 
 def call_agent(message_state: MessagesState):

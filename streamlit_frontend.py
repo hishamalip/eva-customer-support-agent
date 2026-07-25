@@ -1,15 +1,12 @@
 import streamlit as st
-from vector_store import FlowerShopVectorStore
 from chatbot import app
 from langchain_core.messages import AIMessage, HumanMessage
-from tools import CUSTOMER_DATABASE
+from tools import CUSTOMER_DATABASE, ORDERS_DATABASE
 
 # Configure the Streamlit page with wide layout and custom title/icon
 st.set_page_config(layout="wide", page_title="Flower Shop Chatbot", page_icon="🌻")
 left_column, middle_column, right_column = st.columns(3, border=True)
 
-# Initialize the vector store instance for querying FAQ and inventory data
-vector_store = FlowerShopVectorStore()
 
 # Initialize session state for message history
 if "message_history" not in st.session_state:
@@ -50,5 +47,8 @@ with middle_column:
 
 # Display the message history in the right column
 with right_column:
-    st.title('customers database')
+    st.title('Customers DB')
     st.write(CUSTOMER_DATABASE)
+
+    st.title('Order DB')
+    st.write(ORDERS_DATABASE)
