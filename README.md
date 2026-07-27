@@ -86,7 +86,7 @@
    ```
    Edit the `.env` file with your API keys:
    ```
-   MISTRAL_API_KEY=your_mistral_api_key
+   OPENAI_API_KEY=your_api_key
    ```
 
 5. **Initialize the vector database (first run only):**
@@ -188,7 +188,7 @@ Eva: [Places order and confirms]
 
 1. **User Input**: Messages enter through Streamlit interface
 2. **State Management**: LangGraph maintains conversation state
-3. **LLM Processing**: Mistral model processes input with system prompt
+3. **LLM Processing**: OpenAI model processes input with system prompt
 4. **Tool Selection**: Agent decides which tools to call
 5. **Tool Execution**: Tools query vector store or manage data
 6. **Response Generation**: Agent formulates response
@@ -198,7 +198,7 @@ Eva: [Places order and confirms]
 
 ```
 eva-customer-support-agent/
-├── .chroma_db/                 # ChromaDB persistent storage
+├── .chroma_db/                # ChromaDB persistent storage
 ├── .venv/                     # Python virtual environment
 ├── .env                       # Environment variables
 ├── .gitignore                 # Git ignore patterns
