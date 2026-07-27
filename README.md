@@ -1,7 +1,12 @@
 # Eva - Flower Shop Customer Support Agent
 
 <p align="center">
-  <img src="https://img.icons8.com/color/96/000000/flower-bouquet.png" alt="Flower Shop Icon" width="100"/>
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.10%2B-blue?style=flat-square&logo=python" alt="Python" /></a>
+  <a href="https://streamlit.io/"><img src="https://img.shields.io/badge/Streamlit-UI-red?style=flat-square&logo=streamlit" alt="Streamlit" /></a>
+  <a href="https://www.langchain.com/"><img src="https://img.shields.io/badge/LangChain-Integrated-orange?style=flat-square" alt="LangChain" /></a>
+  <a href="https://www.langchain.com/langgraph"><img src="https://img.shields.io/badge/LangGraph-Agent%20Workflow-purple?style=flat-square" alt="LangGraph" /></a>
+  <a href="https://www.trychroma.com/"><img src="https://img.shields.io/badge/ChromaDB-Vector%20Store-green?style=flat-square" alt="ChromaDB" /></a>
+  <a href="https://huggingface.co/"><img src="https://img.shields.io/badge/Hugging%20Face-Embeddings-yellow?style=flat-square&logo=huggingface" alt="Hugging Face" /></a>
 </p>
 
 <h3 align="center">AI-Powered Customer Support Chatbot for Flower Shops</h3>
