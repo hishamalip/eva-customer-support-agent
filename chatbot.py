@@ -34,7 +34,7 @@ chat_template = ChatPromptTemplate.from_messages(
 
 # llm = ChatOpenAI(model="gpt-4o")
 llm = ChatOpenAI(
-    model="ministral-3b-2512",
+    model="mistral-small-2506",
     base_url="https://api.mistral.ai/v1",
     # api_key="lm-studio" // API key is added in .env file
 )
