@@ -1,4 +1,4 @@
-# Eva - Flower Shop Customer Support Agent
+# Eva - Customer Support Agent
 
 <p align="center">
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.10%2B-blue?style=flat-square&logo=python" alt="Python" /></a>
